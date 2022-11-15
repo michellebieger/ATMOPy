@@ -17,6 +17,7 @@ Changelog = "https://github.com/mfbieger/atmopy/releases"
 
 [tool.poetry.dependencies]
 python = "^3.8"
+taurex = "^3.1.1a0"
 
 [tool.poetry.dev-dependencies]
 Pygments = ">=2.10.0"
@@ -46,6 +47,10 @@ myst-parser = {version = ">=0.16.1"}
 
 [tool.poetry.scripts]
 atmopy = "atmopy.__main__:main"
+
+[tool.poetry.group.dev.dependencies]
+black = {version = "^22.10.0", allow-prereleases = true}
+ipython = "^8.6.0"
 
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]

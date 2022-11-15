@@ -2,7 +2,9 @@
 import typing as t
 
 
-def create_namelist(title: str, params: t.Dict[str, t.Union[float, str, int]]) -> str:
+def create_namelist(
+    title: str, params: t.Optional[t.Dict[str, t.Union[float, str, int]]] = None
+) -> str:
     """Creates namelist text string.
 
     Args:
@@ -12,6 +14,8 @@ def create_namelist(title: str, params: t.Dict[str, t.Union[float, str, int]]) -
     """
     base = [f"&{title.upper()}"]
     namelist_params = []
+
+    params = params or {}
 
     for k, v in params.items():
         value_text = None

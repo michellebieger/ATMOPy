@@ -20,7 +20,6 @@ python = "^3.8"
 taurex = "^3.1.1a0"
 astropy = "^5.1.1"
 scipy = "^1.9.3"
-molmass = "^2022.10.18"
 
 [tool.poetry.dev-dependencies]
 Pygments = ">=2.10.0"
@@ -54,6 +53,7 @@ atmopy = "atmopy.__main__:main"
 [tool.poetry.group.dev.dependencies]
 black = {version = "^22.10.0", allow-prereleases = true}
 ipython = "^8.6.0"
+jupyterlab = "^3.5.0"
 
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]
@@ -79,6 +79,13 @@ pretty = true
 show_column_numbers = true
 show_error_codes = true
 show_error_context = true
+
+[tool.poetry.plugins] # Optional super table
+
+[tool.poetry.plugins."taurex.plugins"]
+atmo = "atmopy.taurex"
+
+
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

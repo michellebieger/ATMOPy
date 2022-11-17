@@ -11,16 +11,11 @@ from astropy import units as u
 from .io import baseline_masses
 
 
-# def directories_and_files():
-#     # this is where the user would indicate where their atmo is running
-#     # and define the name of their .in file built in .io.py
-#     return(workingdirectory, geninputfile)
-
-
 class ATMOOutput(t.TypedDict):
     """Output format for ATMO runs."""
 
     abundances: npt.NDArray[np.float64]
+    abundances_vmr: npt.NDArray[np.float64]
     pressure: u.Quantity
     temperature: u.Quantity
     mean_mol_mass: npt.NDArray[np.float64]
@@ -45,8 +40,8 @@ def run_atmo(
     import os
     import shutil
 
-    atmo_path = atmo_path or os.environ["ATMO_PATH"]
-    atmo_executable = atmo_executable or os.environ["ATMO_EXE"]
+    atmo_path = atmo_path or os.environ.get("ATMO_PATH", None)
+    atmo_executable = atmo_executable or os.environ.get("ATMO_EXE", "atmo.x")
 
     working_directory = working_directory or atmo_path
 
@@ -78,19 +73,23 @@ def run_atmo(
 class ATMORunner:
     """Runs ATMO."""
 
-    def __init__(self):
+    def __init__(
+        self,
+        atmo_path: t.Optional[str] = None,
+        atmo_executable: t.Optional[str] = "atmo.x",
+    ):
         """Initialize."""
         from .io import ChemistryInputSection
 
         self.chemistry = ChemistryInputSection()
+        self.atmo_path = atmo_path
+        self.atmo_executable = atmo_executable
 
     def _run(
         self,
         temperature: u.Quantity,
         pressure: u.Quantity,
         run_directory: str,
-        atmo_path: t.Optional[str] = None,
-        atmo_executable: t.Optional[str] = "atmo.x",
         output_filename: t.Optional[str] = "chem_out.ncdf",
     ) -> ATMOOutput:
         """Run atmo in a certain directory."""
@@ -100,23 +99,24 @@ class ATMORunner:
         from .io import convert_molecule_name_to_string
         from .io import generate_input_file
 
-        param_input = ParamInputSection(pressure, temperature)
+        param_input = ParamInputSection(pressure=pressure, temperature=temperature)
 
         param_section = param_input.build_section(run_directory)
 
+        nlevels = temperature.size - 1
         chem_section = self.chemistry.build_section(
             run_directory, output_name=output_filename
         )
 
         full_input_file, input_file = generate_input_file(
-            run_directory, sections=[param_section, chem_section]
+            run_directory, nlevels=nlevels, sections=[param_section, chem_section]
         )
 
         stdout, stderr = run_atmo(
             input_file,
             working_directory=run_directory,
-            atmo_path=atmo_path,
-            atmo_executable=atmo_executable,
+            atmo_path=self.atmo_path,
+            atmo_executable=self.atmo_executable,
         )
 
         expected_output_path = os.path.join(run_directory, output_filename)
@@ -136,9 +136,13 @@ class ATMORunner:
 
         mol_masses = baseline_masses()
 
+        abund_vmr = abundances * mean_mol_mass[None, :] / mol_masses[:, None]
+
+        abund_vmr = abund_vmr / abund_vmr.sum(axis=0)[None, :]
+
         return {
             "abundances": abundances,
-            "abundances_vmr": abundances * mean_mol_mass[None, :] / mol_masses[:, None],
+            "abundances_vmr": abund_vmr,
             "pressure": pressure,
             "temperature": temperature,
             "mean_mol_mass": mean_mol_mass,
@@ -151,8 +155,6 @@ class ATMORunner:
         temperature: u.Quantity,
         pressure: u.Quantity,
         run_directory: t.Optional[str] = None,
-        atmo_path: t.Optional[str] = None,
-        atmo_executable: t.Optional[str] = "atmo.x",
         output_filename: t.Optional[str] = "chem_out.ncdf",
     ) -> ATMOOutput:
         """Run ATMO."""
@@ -163,8 +165,6 @@ class ATMORunner:
                 temperature,
                 pressure,
                 run_directory,
-                atmo_path,
-                atmo_executable,
                 output_filename,
             )
         else:
@@ -173,7 +173,5 @@ class ATMORunner:
                     temperature,
                     pressure,
                     str(f),
-                    atmo_path,
-                    atmo_executable,
                     output_filename,
                 )

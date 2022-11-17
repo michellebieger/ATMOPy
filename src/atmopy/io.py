@@ -50,6 +50,21 @@ def create_namelist(
     return "\n".join(base + namelist_params + ["/"])
 
 
+def create_element_factors(
+    element_factors: t.List[t.Tuple[str, float]],
+    elements: t.Optional[t.List[str]] = None,
+) -> str:
+    """Build ele_xfactor in namelist."""
+    elements = elements or baseline_elements()
+
+    return "\n".join(
+        [
+            f"ele_xfactor({elements.index(elem)+1}) = {value}"
+            for elem, value in element_factors
+        ]
+    )
+
+
 class ChemistryType(str, Enum):
     """Define chemsitry type."""
 
@@ -73,7 +88,7 @@ class ChemistryInputSection:
     fcoeffnine: t.Optional[str] = "coeff_NASA_sc.dat"
     """NASA 9 polynomial file: users should already have this from their atmo install"""
 
-    element_factor: t.Optional[npt.NDArray[np.float64]] = None  # ele_xfactor
+    element_factor: t.Optional[t.List[t.Tuple[str, float]]] = None
 
     metallicity: t.Optional[float] = 0.0
     """In log 10 units mate"""
@@ -147,7 +162,6 @@ class ChemistryInputSection:
             my_output["fAneqout"] = output_filename
 
         mappings = {
-            "element_factor": "ele_xfactor",
             "metallicity": "MdH",
             "condensation_nh3": "cond_NH3",
             "condensation_h2o": "cond_H2O",
@@ -157,6 +171,8 @@ class ChemistryInputSection:
 
         my_output = {mappings.get(k, k): v for k, v in my_output.items()}
         # check atmo inputs against the namelist params from atmo
+        if self.element_factor:
+            my_output["elem_xfactor"] = create_element_factors(self.element_factor)
 
         return create_namelist("chemistry", my_output)
 
@@ -186,7 +202,6 @@ class ParamInputSection:
 
             pressure = f.createVariable("pressure", np.float64, ("nlevel",))
             pressure[:] = self.pressure.to(u.dyn / u.cm**2).value
-
         return create_namelist(
             "param",
             {
@@ -197,12 +212,16 @@ class ParamInputSection:
 
 
 def generate_input_file(
-    directory: str, output_name: str = "input.in", sections: t.List[str] = None
+    directory: str,
+    nlevels: t.Optional[int] = 100,
+    output_name: str = "input.in",
+    sections: t.List[str] = None,
 ) -> t.Tuple[str, str]:
     """Generate ATMO input file.
 
     Args:
         directory: Directory to write input file
+        nlevels: Number of atmospheric levels in atmosphere.
         output_name: Output filename
         sections: List of sections to include
 
@@ -214,7 +233,9 @@ def generate_input_file(
 
     sections = sections or []
 
-    full_string = "\n\n".join([baseline_input_file()] + sections)
+    full_string = "\n\n".join(
+        [baseline_input_file().replace("__NLEVELS__", f"{nlevels}")] + sections
+    )
 
     filename = os.path.join(directory, output_name)
     with open(filename, "w") as f:
@@ -267,6 +288,35 @@ def baseline_input_file() -> str:
 
     with open(base_file) as f:
         return f.read()
+
+
+def baseline_elements():
+    """Return baseline elements in ATMO."""
+    return [
+        "H",
+        "He",
+        "C",
+        "N",
+        "O",
+        "Na",
+        "K",
+        "Si",
+        "Ar",
+        "Ti",
+        "V",
+        "S",
+        "Cl",
+        "Mg",
+        "Al",
+        "Ca",
+        "Fe",
+        "Cr",
+        "Li",
+        "Cs",
+        "Rb",
+        "F",
+        "P",
+    ]
 
 
 def copy_pkg_file(filename: str, output_directory: str) -> None:

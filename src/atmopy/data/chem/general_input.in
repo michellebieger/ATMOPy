@@ -6,8 +6,7 @@
 &EOS gamma = 0./
 
 &GRID
-ndepth = 50
-
+ndepth = __NLEVELS__
 corr_k = t
 /
 

@@ -635,6 +635,18 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
+name = "molmass"
+version = "2022.10.18"
+description = "Molecular mass calculations"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.extras]
+all = ["Flask", "pandas"]
+gui = ["wxPython (>=4.0)"]
+
+[[package]]
 name = "mypy"
 version = "0.991"
 description = "Optional static typing for Python"
@@ -1498,7 +1510,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "c71587eaf6bc7f6239d601d9edac9b9d34a3159a7517fb346eb83c92477b7fa3"
+content-hash = "b644ad269d97131e6dceb19e8c434ac225c05f39d7fda7a82fe3d9f482be1564"
 
 [metadata.files]
 alabaster = [
@@ -1884,6 +1896,10 @@ mdit-py-plugins = [
 mdurl = [
     {file = "mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8"},
     {file = "mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba"},
+]
+molmass = [
+    {file = "molmass-2022.10.18-py3-none-any.whl", hash = "sha256:c0962e67a74b61d6ca9de2eb5d0ba64bca9bd805f57ea24623d15c842916d690"},
+    {file = "molmass-2022.10.18.tar.gz", hash = "sha256:1fda78f7e69af7fce9482ec85ef524a95b674f51ebfd366f6fe8c1850b5d848e"},
 ]
 mypy = [
     {file = "mypy-0.991-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:7d17e0a9707d0772f4a7b878f04b4fd11f6f5bcb9b3813975a9b13c9332153ab"},

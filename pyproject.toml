@@ -18,6 +18,9 @@ Changelog = "https://github.com/mfbieger/atmopy/releases"
 [tool.poetry.dependencies]
 python = "^3.8"
 taurex = "^3.1.1a0"
+astropy = "^5.1.1"
+scipy = "^1.9.3"
+molmass = "^2022.10.18"
 
 [tool.poetry.dev-dependencies]
 Pygments = ">=2.10.0"

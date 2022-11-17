@@ -1,0 +1,29 @@
+! Namelist file for the tutorial chem_eq: calculating chemical equilibrium abundances with a read in PT profile
+
+&UNITS
+/
+
+&EOS gamma = 0./
+
+&GRID
+ndepth = 50
+
+corr_k = t
+/
+
+
+&RADTRANS
+/
+
+
+&OPACITY
+nkap =0
+/
+
+&SOLVER
+solve_hydro  = f
+solve_energy = f
+/
+
+&CONVECTION
+/

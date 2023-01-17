@@ -23,11 +23,12 @@
 
 ## Features
 
-- TODO
+- Use the ATMO equilibrium chemistry plugin in your TauREx 3.1 forward models and retrievals!
 
 ## Requirements
 
-- TODO
+- Ensure that you have a working installation of ATMO on your machine (https://www.gitlab.erc-atmo.eu/1-2d_tools/atmo). If you need access to ATMO, please contact Pascal Tremblin: pascal.tremblin@cea.fr
+- You will need a working installation of TauREx 3.1 on your machine: https://taurex3-public.readthedocs.io/
 
 ## Installation
 

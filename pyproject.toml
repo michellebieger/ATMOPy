@@ -20,6 +20,8 @@ python = "^3.8"
 taurex = "^3.1.1a0"
 astropy = "^5.1.1"
 scipy = "^1.9.3"
+matplotlib = "^3.7.1"
+ipywidgets = "^8.0.4"
 
 [tool.poetry.dev-dependencies]
 Pygments = ">=2.10.0"
